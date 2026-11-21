@@ -50,12 +50,12 @@
     <h2>Top 15 — France</h2>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Rang France</th><th>Rang mondial</th><th>Identifiant joueur</th><th class="num">Dégâts</th><th>Palier</th></tr></thead>
+        <thead><tr><th>Rang France</th><th>Joueur</th><th class="num">Dégâts</th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
     </div>
     <p class="note">Le classement fourni par cette API contient l'identifiant du joueur, pas son pseudonyme. Les dégâts sont ceux du classement hebdomadaire au moment de la récupération.</p>
-    <button id="copy" type="button">Copier les résultats (CSV)</button>
+    <button id="copy" type="button">Copier pour l'article WarEra</button>
   </section>
 
   <p class="note">Source : <code>warera.realmarijn.nl/api/proxy/ranking.getRankingPage</code> · Pays France : <code>6813b6d446e731854c7ac79a</code></p>
@@ -72,7 +72,13 @@
   function formatNumber(value) {
     return Number(value).toLocaleString('fr-FR');
   }
-
+function formatMillions(value) {
+  return (Number(value) / 1000000).toLocaleString('fr-FR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  }) + 'M';
+}
+  
   function setStatus(message, isError = false) {
     $('status').textContent = message;
     $('status').classList.toggle('error', isError);
@@ -145,11 +151,11 @@
       const fragment = document.createDocumentFragment();
       latestRows.forEach((item, index) => {
         const tr = document.createElement('tr');
-        const values = [index + 1, item.rank ?? '—', item.user ?? '—', formatNumber(item.value ?? 0), item.tier ?? '—'];
+        const values = [index + 1, `@${item.user ?? '—'}`, formatMillions(item.value ?? 0)];
         values.forEach((value, i) => {
           const td = document.createElement('td');
           td.textContent = value;
-          if (i === 3) td.className = 'num';
+          if (i === 2) td.className = 'num';
           tr.appendChild(td);
         });
         fragment.appendChild(tr);
@@ -173,10 +179,12 @@
   $('run').addEventListener('click', run);
   $('copy').addEventListener('click', async () => {
     if (!latestRows.length) return;
-    const lines = [['Rang France','Rang mondial','ID joueur','Dégâts','Palier'], ...latestRows.map((item, index) => [index + 1, item.rank ?? '', item.user ?? '', item.value ?? '', item.tier ?? ''])];
-    const csv = lines.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(';')).join('\n');
-    try {
-      await navigator.clipboard.writeText(csv);
+    const textToCopy = latestRows.map((item, index) =>
+  `${index + 1} - @${item.user} - ${formatMillions(item.value ?? 0)}`
+).join('\n');
+
+try {
+  await navigator.clipboard.writeText(textToCopy);
       setStatus('Résultats CSV copiés dans le presse-papiers.');
     } catch {
       setStatus('Impossible de copier automatiquement. Sélectionne le tableau et copie-le manuellement.', true);
