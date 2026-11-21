@@ -74,8 +74,8 @@
   }
 function formatMillions(value) {
   return (Number(value) / 1000000).toLocaleString('fr-FR', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   }) + 'M';
 }
   
