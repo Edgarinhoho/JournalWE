@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JournalWE — Classement France</title>
+  <style>
+    :root { color-scheme: dark; --bg:#10151d; --panel:#1a2330; --line:#2d3a4b; --text:#edf2f7; --muted:#aab7c7; --accent:#79b8ff; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:28px 16px; background:var(--bg); color:var(--text); font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif; }
+    main { max-width:1000px; margin:auto; }
+    h1 { margin:0 0 6px; font-size:clamp(25px,4vw,36px); }
+    .sub { color:var(--muted); margin:0 0 24px; }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin:18px 0; }
+    button { background:var(--accent); color:#071321; border:0; border-radius:9px; padding:11px 18px; font-weight:700; font-size:15px; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:wait; }
+    #status { margin:14px 0 0; color:var(--muted); white-space:pre-wrap; }
+    .stats { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .stat { background:#111a25; border:1px solid var(--line); border-radius:9px; padding:9px 12px; }
+    .stat strong { display:block; font-size:20px; }
+    .stat span { color:var(--muted); font-size:12px; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:580px; }
+    th,td { padding:11px 12px; text-align:left; border-bottom:1px solid var(--line); }
+    th { color:var(--muted); font-size:13px; font-weight:600; }
+    td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+    code { overflow-wrap:anywhere; color:#c8dcf4; }
+    .note { color:var(--muted); font-size:13px; }
+    .error { color:#ff9c9c !important; }
+    #results { display:none; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>JournalWE</h1>
+  <p class="sub">Classement hebdomadaire des combattants français — WarEra</p>
+
+  <section class="panel">
+    <p>Récupère automatiquement les pages du classement mondial, en suivant chaque nouveau curseur, jusqu'à trouver les 15 meilleurs joueurs français.</p>
+    <button id="run">Récupérer le top 15 français</button>
+    <div id="status" role="status" aria-live="polite">En attente.</div>
+    <div class="stats" id="stats" hidden>
+      <div class="stat"><strong id="found">0</strong><span>joueurs français trouvés</span></div>
+      <div class="stat"><strong id="pages">0</strong><span>pages parcourues</span></div>
+      <div class="stat"><strong id="total">—</strong><span>joueurs dans le classement mondial</span></div>
+    </div>
+  </section>
+
+  <section class="panel" id="results">
+    <h2>Top 15 — France</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Rang France</th><th>Rang mondial</th><th>Identifiant joueur</th><th class="num">Dégâts</th><th>Palier</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="note">Le classement fourni par cette API contient l'identifiant du joueur, pas son pseudonyme. Les dégâts sont ceux du classement hebdomadaire au moment de la récupération.</p>
+    <button id="copy" type="button">Copier les résultats (CSV)</button>
+  </section>
+
+  <p class="note">Source : <code>warera.realmarijn.nl/api/proxy/ranking.getRankingPage</code> · Pays France : <code>6813b6d446e731854c7ac79a</code></p>
+</main>
+<script>
+(() => {
+  const API_URL = 'https://warera.realmarijn.nl/api/proxy/ranking.getRankingPage';
+  const FRANCE_ID = '6813b6d446e731854c7ac79a';
+  const PAGE_SIZE = 50;
+  const TARGET = 15;
+  const $ = (id) => document.getElementById(id);
+  let latestRows = [];
+
+  function formatNumber(value) {
+    return Number(value).toLocaleString('fr-FR');
+  }
+
+  function setStatus(message, isError = false) {
+    $('status').textContent = message;
+    $('status').classList.toggle('error', isError);
+  }
+
+  async function getPage(cursor) {
+    const payload = { rankingType: 'weeklyUserDamages', limit: PAGE_SIZE };
+    if (cursor) payload.cursor = cursor;
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error(`L'API a répondu avec le statut HTTP ${response.status}.`);
+    const json = await response.json();
+    const data = json && json.result && json.result.data;
+    if (!data || !Array.isArray(data.items)) {
+      throw new Error('Réponse inattendue de l’API : la liste « items » est introuvable.');
+    }
+    return data;
+  }
+
+  async function run() {
+    const button = $('run');
+    button.disabled = true;
+    $('results').style.display = 'none';
+    $('stats').hidden = true;
+    $('rows').replaceChildren();
+    latestRows = [];
+
+    let cursor = null;
+    let pages = 0;
+    let worldCount = null;
+    let french = [];
+    const usedCursors = new Set();
+
+    try {
+      do {
+        const data = await getPage(cursor);
+        pages += 1;
+        if (data.ranking && Number.isFinite(data.ranking.count)) worldCount = data.ranking.count;
+        french.push(...data.items.filter(item => item.country === FRANCE_ID));
+        french.sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity));
+        setStatus(`Lecture en cours… ${pages} page(s) parcourue(s), ${french.length} joueur(s) français trouvé(s).`);
+
+        const next = data.nextCursor || null;
+        if (!next || french.length >= TARGET) {
+          cursor = null;
+          break;
+        }
+        if (usedCursors.has(next)) throw new Error('Le curseur reçu a déjà été utilisé : arrêt pour éviter une boucle.');
+        usedCursors.add(next);
+        cursor = next;
+        // Petite pause entre les appels pour éviter d'enchaîner trop rapidement les requêtes.
+        await new Promise(resolve => setTimeout(resolve, 120));
+      } while (cursor);
+
+      latestRows = french.slice(0, TARGET);
+      $('found').textContent = latestRows.length;
+      $('pages').textContent = pages;
+      $('total').textContent = worldCount === null ? '—' : formatNumber(worldCount);
+      $('stats').hidden = false;
+
+      if (latestRows.length === 0) {
+        setStatus('Aucun joueur français trouvé. Vérifie que le classement contient bien des données.', true);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      latestRows.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        const values = [index + 1, item.rank ?? '—', item.user ?? '—', formatNumber(item.value ?? 0), item.tier ?? '—'];
+        values.forEach((value, i) => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          if (i === 3) td.className = 'num';
+          tr.appendChild(td);
+        });
+        fragment.appendChild(tr);
+      });
+      $('rows').appendChild(fragment);
+      $('results').style.display = 'block';
+      setStatus(latestRows.length >= TARGET
+        ? `Terminé : top ${TARGET} français récupéré en ${pages} page(s).`
+        : `Terminé : seulement ${latestRows.length} joueur(s) français trouvé(s) avant la fin du classement.`);
+    } catch (error) {
+      console.error(error);
+      const message = error instanceof TypeError
+        ? 'Échec de connexion. Le navigateur peut bloquer cet appel à cause des règles CORS du serveur. Si ce message apparaît depuis GitHub Pages, il faudra passer par un petit relais serveur ; le code actuel ne peut pas contourner CORS.'
+        : error.message || 'Une erreur inconnue est survenue.';
+      setStatus(message, true);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  $('run').addEventListener('click', run);
+  $('copy').addEventListener('click', async () => {
+    if (!latestRows.length) return;
+    const lines = [['Rang France','Rang mondial','ID joueur','Dégâts','Palier'], ...latestRows.map((item, index) => [index + 1, item.rank ?? '', item.user ?? '', item.value ?? '', item.tier ?? ''])];
+    const csv = lines.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(';')).join('\n');
+    try {
+      await navigator.clipboard.writeText(csv);
+      setStatus('Résultats CSV copiés dans le presse-papiers.');
+    } catch {
+      setStatus('Impossible de copier automatiquement. Sélectionne le tableau et copie-le manuellement.', true);
+    }
+  });
+})();
+</script>
+</body>
+</html>
