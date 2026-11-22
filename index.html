@@ -285,7 +285,7 @@
     <h2>Top 10 — Donateurs français</h2>
 
     <p>
-      Récupère toutes les transactions, conserve les dons effectués
+      Récupère les transactions, conserve les dons effectués
       en France pendant la semaine UTC et additionne les montants
       par joueur.
     </p>
@@ -373,9 +373,6 @@
   const MU_TARGET = 5;
   const MU_BATCH_SIZE = 10;
 
-  // Sécurité contre une pagination infinie.
-  // Si cette limite est atteinte, aucun classement définitif
-  // des donateurs ne sera affiché.
   const MAX_DONATION_PAGES = 1000;
 
   const $ = (id) => document.getElementById(id);
@@ -943,8 +940,14 @@
     let donationCount = 0;
     let donationTotal = 0;
 
+    let cutoffReached = false;
+    let previousTimestamp = Infinity;
+
     const donors = new Map();
     const usedCursors = new Set();
+
+    const weekStart = donationWeek.start.getTime();
+    const weekEnd = donationWeek.end.getTime();
 
     try {
       do {
@@ -960,28 +963,56 @@
         pages += 1;
 
         for (const item of data.items) {
+          // Vérifier la date de toutes les transactions,
+          // pas uniquement celles de type donation.
+
+          if (!item.createdAt) {
+            throw new Error(
+              'Une transaction ne possède pas de date. ' +
+              'Impossible de garantir la fiabilité du classement.'
+            );
+          }
+
+          const timestamp = new Date(item.createdAt).getTime();
+
+          if (!Number.isFinite(timestamp)) {
+            throw new Error(
+              'Date de transaction invalide. ' +
+              'Impossible de garantir la fiabilité du classement.'
+            );
+          }
+
+          // Vérifier que les transactions sont bien triées
+          // de la plus récente à la plus ancienne.
+
+          if (timestamp > previousTimestamp) {
+            throw new Error(
+              'Les transactions ne sont pas classées de la plus récente ' +
+              'à la plus ancienne. Arrêt pour éviter un classement incomplet.'
+            );
+          }
+
+          previousTimestamp = timestamp;
+
+          // Arrêter dès que le début de semaine est dépassé.
+
+          if (timestamp < weekStart) {
+            cutoffReached = true;
+            break;
+          }
+
+          // Le début de semaine suivante est exclu.
+
+          if (timestamp >= weekEnd) {
+            continue;
+          }
+
+          // Ne conserver que les dons français.
+
           if (
             item.transactionType !== 'donation' ||
             item.sellerCountryId !== FRANCE_ID ||
-            !item.buyerId ||
-            item.createdAt === undefined ||
-            item.money === undefined
-          ) {
-            continue;
-          }
-
-          const createdAt = new Date(item.createdAt);
-          const timestamp = createdAt.getTime();
-
-          if (!Number.isFinite(timestamp)) {
-            continue;
-          }
-
-          // Début de semaine inclusif,
-          // début de semaine suivante exclusif.
-          if (
-            timestamp < donationWeek.start.getTime() ||
-            timestamp >= donationWeek.end.getTime()
+            !item.buyerId
           ) {
             continue;
           }
@@ -1005,10 +1036,19 @@
 
         setStatus(
           'donationStatus',
-          `Récupération en cours… ${pages} page(s) parcourue(s), ` +
-          `${donationCount} don(s) français comptabilisé(s), ` +
-          `${donors.size} donateur(s) identifié(s).`
+          cutoffReached
+            ? `Début de semaine dépassé : arrêt après ${pages} page(s).`
+            : `Récupération en cours… ${pages} page(s) parcourue(s), ` +
+              `${donationCount} don(s) français comptabilisé(s), ` +
+              `${donors.size} donateur(s) identifié(s).`
         );
+
+        // Aucune page supplémentaire si la limite est atteinte.
+
+        if (cutoffReached) {
+          cursor = null;
+          break;
+        }
 
         const next = data.nextCursor || null;
 
@@ -1033,7 +1073,8 @@
 
       } while (cursor);
 
-      // Le parcours est terminé : on peut calculer le classement.
+      // Construire le classement des donateurs.
+
       latestDonationRows = Array.from(
         donors.entries()
       )
@@ -1045,6 +1086,7 @@
         .slice(0, 10);
 
       $('donationPages').textContent = pages;
+
       $('donationCount').textContent =
         formatNumber(donationCount);
 
@@ -1098,7 +1140,12 @@
       setStatus(
         'donationStatus',
         `Terminé : ${latestDonationRows.length} donateur(s) dans le Top 10. ` +
-        `${pages} page(s) de transactions entièrement parcourue(s).`
+        `${pages} page(s) parcourue(s). ` +
+        (
+          cutoffReached
+            ? 'Arrêt effectué au début de la semaine.'
+            : 'Fin des transactions atteinte.'
+        )
       );
 
     } catch (error) {
