@@ -510,22 +510,35 @@
       const fragment = document.createDocumentFragment();
 
       latestMuRows.forEach((item, index) => {
-        const tr = document.createElement('tr');
-        const values = [
-          index + 1,
-          `@${item.mu}`,
-          formatMillions(item.value ?? 0)
-        ];
+  const tr = document.createElement('tr');
+  const muUrl = `https://app.warera.io/mu/${item.mu}`;
 
-        values.forEach((value, i) => {
-          const td = document.createElement('td');
-          td.textContent = value;
-          if (i === 2) td.className = 'num';
-          tr.appendChild(td);
-        });
+  const values = [
+    index + 1,
+    muUrl,
+    formatMillions(item.value ?? 0)
+  ];
 
-        fragment.appendChild(tr);
-      });
+  values.forEach((value, i) => {
+    const td = document.createElement('td');
+
+    if (i === 1) {
+      const link = document.createElement('a');
+      link.href = value;
+      link.textContent = value;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      td.appendChild(link);
+    } else {
+      td.textContent = value;
+    }
+
+    if (i === 2) td.className = 'num';
+    tr.appendChild(td);
+  });
+
+  fragment.appendChild(tr);
+});
 
       $('muRows').appendChild(fragment);
       $('muResults').style.display = 'block';
@@ -567,9 +580,10 @@
   $('muCopy').addEventListener('click', async () => {
     if (!latestMuRows.length) return;
 
-    const textToCopy = latestMuRows.map((item, index) =>
-      `${index + 1} - @${item.mu} - ${formatMillions(item.value ?? 0)}`
-    ).join('\n');
+    const textToCopy = latestMuRows.map((item, index) => {
+  const muUrl = `https://app.warera.io/mu/${item.mu}`;
+  return `${index + 1} - [${muUrl}](${muUrl}) - ${formatMillions(item.value ?? 0)}`;
+}).join('\n');
 
     try {
       await navigator.clipboard.writeText(textToCopy);
