@@ -513,7 +513,7 @@
         const tr = document.createElement('tr');
         const values = [
           index + 1,
-          item.name,
+          @${item.mu},
           formatMillions(item.value ?? 0)
         ];
 
@@ -568,7 +568,7 @@
     if (!latestMuRows.length) return;
 
     const textToCopy = latestMuRows.map((item, index) =>
-      `${index + 1} - ${item.name} - ${formatMillions(item.value ?? 0)}`
+      `${index + 1} - @${item.mu} - ${formatMillions(item.value ?? 0)}`
     ).join('\n');
 
     try {
