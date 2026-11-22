@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>JournalWE — Classements France</title>
+
   <style>
     :root {
       color-scheme: dark;
@@ -15,7 +16,11 @@
       --muted:#aab7c7;
       --accent:#79b8ff;
     }
-    * { box-sizing:border-box; }
+
+    * {
+      box-sizing:border-box;
+    }
+
     body {
       margin:0;
       padding:28px 16px;
@@ -23,10 +28,26 @@
       color:var(--text);
       font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;
     }
-    main { max-width:1000px; margin:auto; }
-    h1 { margin:0 0 6px; font-size:clamp(25px,4vw,36px); }
-    h2 { margin-top:0; }
-    .sub { color:var(--muted); margin:0 0 24px; }
+
+    main {
+      max-width:1000px;
+      margin:auto;
+    }
+
+    h1 {
+      margin:0 0 6px;
+      font-size:clamp(25px,4vw,36px);
+    }
+
+    h2 {
+      margin-top:0;
+    }
+
+    .sub {
+      color:var(--muted);
+      margin:0 0 24px;
+    }
+
     .panel {
       background:var(--panel);
       border:1px solid var(--line);
@@ -34,6 +55,7 @@
       padding:20px;
       margin:18px 0;
     }
+
     button {
       background:var(--accent);
       color:#071321;
@@ -44,62 +66,107 @@
       font-size:15px;
       cursor:pointer;
     }
-    button:disabled { opacity:.55; cursor:wait; }
-    #status, #muStatus {
+
+    button:disabled {
+      opacity:.55;
+      cursor:wait;
+    }
+
+    #status,
+    #muStatus,
+    #donationStatus {
       margin:14px 0 0;
       color:var(--muted);
       white-space:pre-wrap;
     }
+
     .stats {
       display:flex;
       flex-wrap:wrap;
       gap:10px;
       margin-top:14px;
     }
+
     .stat {
       background:#111a25;
       border:1px solid var(--line);
       border-radius:9px;
       padding:9px 12px;
     }
-    .stat strong { display:block; font-size:20px; }
-    .stat span { color:var(--muted); font-size:12px; }
-    .table-wrap { overflow-x:auto; }
+
+    .stat strong {
+      display:block;
+      font-size:20px;
+    }
+
+    .stat span {
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .table-wrap {
+      overflow-x:auto;
+    }
+
     table {
       width:100%;
       border-collapse:collapse;
       min-width:400px;
     }
+
     th,td {
       padding:11px 12px;
       text-align:left;
       border-bottom:1px solid var(--line);
     }
+
     th {
       color:var(--muted);
       font-size:13px;
       font-weight:600;
     }
-    td.num, th.num {
+
+    td.num,
+    th.num {
       text-align:right;
       font-variant-numeric:tabular-nums;
     }
-    code { overflow-wrap:anywhere; color:#c8dcf4; }
-    .note { color:var(--muted); font-size:13px; }
-    .error { color:#ff9c9c !important; }
-    .results { display:none; }
-    .copy-button { margin-top:14px; }
+
+    code {
+      overflow-wrap:anywhere;
+      color:#c8dcf4;
+    }
+
+    .note {
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .error {
+      color:#ff9c9c !important;
+    }
+
+    .results {
+      display:none;
+    }
+
+    .copy-button {
+      margin-top:14px;
+    }
   </style>
 </head>
 
 <body>
 <main>
+
   <h1>JournalWE</h1>
   <p class="sub">Classements hebdomadaires français — WarEra</p>
 
   <!-- TOP 15 JOUEURS -->
+
   <section class="panel">
     <h2>Top 15 — Joueurs français</h2>
+
     <p>
       Récupère les pages du classement mondial jusqu'à trouver
       les 15 meilleurs joueurs français.
@@ -107,17 +174,21 @@
 
     <button id="run">Récupérer le top 15 français</button>
 
-    <div id="status" role="status" aria-live="polite">En attente.</div>
+    <div id="status" role="status" aria-live="polite">
+      En attente.
+    </div>
 
     <div class="stats" id="stats" hidden>
       <div class="stat">
         <strong id="found">0</strong>
         <span>joueurs français trouvés</span>
       </div>
+
       <div class="stat">
         <strong id="pages">0</strong>
         <span>pages parcourues</span>
       </div>
+
       <div class="stat">
         <strong id="total">—</strong>
         <span>joueurs dans le classement mondial</span>
@@ -152,26 +223,34 @@
   </section>
 
   <!-- TOP 5 UM -->
+
   <section class="panel">
     <h2>Top 5 — UM françaises</h2>
+
     <p>
       Recherche les unités militaires dans le classement mondial
       des dégâts hebdomadaires et vérifie leur pays.
     </p>
 
-    <button id="runMu">Récupérer le top 5 des UM françaises</button>
+    <button id="runMu">
+      Récupérer le top 5 des UM françaises
+    </button>
 
-    <div id="muStatus" role="status" aria-live="polite">En attente.</div>
+    <div id="muStatus" role="status" aria-live="polite">
+      En attente.
+    </div>
 
     <div class="stats" id="muStats" hidden>
       <div class="stat">
         <strong id="muFound">0</strong>
         <span>UM françaises trouvées</span>
       </div>
+
       <div class="stat">
         <strong id="muPages">0</strong>
         <span>pages parcourues</span>
       </div>
+
       <div class="stat">
         <strong id="muTotal">—</strong>
         <span>UM dans le classement mondial</span>
@@ -200,35 +279,122 @@
     </button>
   </section>
 
+  <!-- TOP 10 DONATEURS -->
+
+  <section class="panel">
+    <h2>Top 10 — Donateurs français</h2>
+
+    <p>
+      Récupère toutes les transactions, conserve les dons effectués
+      en France pendant la semaine UTC et additionne les montants
+      par joueur.
+    </p>
+
+    <p class="note" id="donationPeriod">
+      Période : calcul en cours…
+    </p>
+
+    <button id="runDonations">
+      Récupérer le top 10 des donateurs
+    </button>
+
+    <div id="donationStatus" role="status" aria-live="polite">
+      En attente.
+    </div>
+
+    <div class="stats" id="donationStats" hidden>
+      <div class="stat">
+        <strong id="donationPages">0</strong>
+        <span>pages parcourues</span>
+      </div>
+
+      <div class="stat">
+        <strong id="donationCount">0</strong>
+        <span>dons français</span>
+      </div>
+
+      <div class="stat">
+        <strong id="donationDonors">0</strong>
+        <span>donateurs</span>
+      </div>
+
+      <div class="stat">
+        <strong id="donationTotal">0</strong>
+        <span>montant total des dons</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel results" id="donationResults">
+    <h2>Top 10 — Donateurs français</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rang</th>
+            <th>Donateur</th>
+            <th class="num">Dons cumulés</th>
+          </tr>
+        </thead>
+        <tbody id="donationRows"></tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      Les identifiants sont préfixés par @ pour être reconnus
+      par l'éditeur WarEra.
+    </p>
+
+    <button class="copy-button" id="donationCopy" type="button">
+      Copier pour l'article WarEra
+    </button>
+  </section>
+
   <p class="note">
     Source : WarEra API · Pays France :
     <code>6813b6d446e731854c7ac79a</code>
   </p>
+
 </main>
 
 <script>
 (() => {
-  const API_URL = 'https://journalwe-proxy.deathtroy.workers.dev/';
-  const FRANCE_ID = '6813b6d446e731854c7ac79a';
+
+  const API_URL =
+    'https://journalwe-proxy.deathtroy.workers.dev/';
+
+  const FRANCE_ID =
+    '6813b6d446e731854c7ac79a';
+
   const PAGE_SIZE = 50;
+
   const PLAYER_TARGET = 15;
   const MU_TARGET = 5;
   const MU_BATCH_SIZE = 10;
+
+  // Sécurité contre une pagination infinie.
+  // Si cette limite est atteinte, aucun classement définitif
+  // des donateurs ne sera affiché.
+  const MAX_DONATION_PAGES = 1000;
 
   const $ = (id) => document.getElementById(id);
 
   let latestRows = [];
   let latestMuRows = [];
+  let latestDonationRows = [];
 
   function formatNumber(value) {
     return Number(value).toLocaleString('fr-FR');
   }
 
   function formatMillions(value) {
-    return (Number(value) / 1000000).toLocaleString('fr-FR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }) + 'M';
+    return (
+      (Number(value) / 1000000).toLocaleString('fr-FR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + 'M'
+    );
   }
 
   function setStatus(elementId, message, isError = false) {
@@ -236,19 +402,89 @@
     $(elementId).classList.toggle('error', isError);
   }
 
+  function extractApiData(json) {
+    return (
+      json?.result?.data ??
+      json?.data ??
+      json
+    );
+  }
+
   async function postToWorker(payload) {
     const response = await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(payload)
     });
 
+    const responseBody = await response.text();
+
     if (!response.ok) {
-      throw new Error(`L'API a répondu avec le statut HTTP ${response.status}.`);
+      throw new Error(
+        `L'API a répondu avec le statut HTTP ${response.status} : ` +
+        responseBody.slice(0, 300)
+      );
     }
 
-    return await response.json();
+    try {
+      return JSON.parse(responseBody);
+    } catch {
+      throw new Error(
+        'La réponse du Worker n’est pas du JSON : ' +
+        responseBody.slice(0, 300)
+      );
+    }
   }
+
+  // ==========================
+  // PÉRIODE HEBDOMADAIRE UTC
+  // ==========================
+
+  function getCurrentWeekRange() {
+    const now = new Date();
+
+    const start = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate()
+    ));
+
+    const daysSinceMonday =
+      (start.getUTCDay() + 6) % 7;
+
+    start.setUTCDate(
+      start.getUTCDate() - daysSinceMonday
+    );
+
+    const end = new Date(start);
+
+    end.setUTCDate(end.getUTCDate() + 7);
+
+    return {
+      start,
+      end,
+      startISO: start.toISOString(),
+      endISO: end.toISOString()
+    };
+  }
+
+  function formatDateUTC(date) {
+    return date.toLocaleDateString('fr-FR', {
+      timeZone: 'UTC',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+  const donationWeek = getCurrentWeekRange();
+
+  $('donationPeriod').textContent =
+    `Période UTC : du ${formatDateUTC(donationWeek.start)} ` +
+    `à 00 h 00 inclus au ${formatDateUTC(donationWeek.end)} ` +
+    `à 00 h 00 exclu.`;
 
   // ==========================
   // TOP 15 JOUEURS FRANÇAIS
@@ -260,13 +496,17 @@
       limit: PAGE_SIZE
     };
 
-    if (cursor) payload.cursor = cursor;
+    if (cursor) {
+      payload.cursor = cursor;
+    }
 
     const json = await postToWorker(payload);
-    const data = json && json.result && json.result.data;
+    const data = extractApiData(json);
 
     if (!data || !Array.isArray(data.items)) {
-      throw new Error('Réponse inattendue : classement des joueurs introuvable.');
+      throw new Error(
+        'Réponse inattendue : classement des joueurs introuvable.'
+      );
     }
 
     return data;
@@ -274,34 +514,50 @@
 
   async function runPlayers() {
     const button = $('run');
+
     button.disabled = true;
 
     $('results').style.display = 'none';
     $('stats').hidden = true;
     $('rows').replaceChildren();
+
     latestRows = [];
 
     let cursor = null;
     let pages = 0;
     let worldCount = null;
     let french = [];
+
     const usedCursors = new Set();
 
     try {
       do {
         const data = await getPlayerPage(cursor);
+
         pages += 1;
 
-        if (data.ranking && Number.isFinite(data.ranking.count)) {
+        if (
+          data.ranking &&
+          Number.isFinite(data.ranking.count)
+        ) {
           worldCount = data.ranking.count;
         }
 
-        french.push(...data.items.filter(item => item.country === FRANCE_ID));
-        french.sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity));
+        french.push(
+          ...data.items.filter(
+            item => item.country === FRANCE_ID
+          )
+        );
+
+        french.sort(
+          (a, b) =>
+            (a.rank ?? Infinity) - (b.rank ?? Infinity)
+        );
 
         setStatus(
           'status',
-          `Lecture en cours… ${pages} page(s), ${french.length} joueur(s) français trouvé(s).`
+          `Lecture en cours… ${pages} page(s), ` +
+          `${french.length} joueur(s) français trouvé(s).`
         );
 
         const next = data.nextCursor || null;
@@ -312,24 +568,38 @@
         }
 
         if (usedCursors.has(next)) {
-          throw new Error('Le curseur reçu a déjà été utilisé.');
+          throw new Error(
+            'Le curseur reçu a déjà été utilisé.'
+          );
         }
 
         usedCursors.add(next);
         cursor = next;
 
-        await new Promise(resolve => setTimeout(resolve, 120));
+        await new Promise(
+          resolve => setTimeout(resolve, 120)
+        );
+
       } while (cursor);
 
       latestRows = french.slice(0, PLAYER_TARGET);
 
       $('found').textContent = latestRows.length;
       $('pages').textContent = pages;
-      $('total').textContent = worldCount === null ? '—' : formatNumber(worldCount);
+
+      $('total').textContent =
+        worldCount === null
+          ? '—'
+          : formatNumber(worldCount);
+
       $('stats').hidden = false;
 
       if (latestRows.length === 0) {
-        setStatus('status', 'Aucun joueur français trouvé.', true);
+        setStatus(
+          'status',
+          'Aucun joueur français trouvé.',
+          true
+        );
         return;
       }
 
@@ -337,6 +607,7 @@
 
       latestRows.forEach((item, index) => {
         const tr = document.createElement('tr');
+
         const values = [
           index + 1,
           `@${item.user ?? '—'}`,
@@ -345,8 +616,13 @@
 
         values.forEach((value, i) => {
           const td = document.createElement('td');
+
           td.textContent = value;
-          if (i === 2) td.className = 'num';
+
+          if (i === 2) {
+            td.className = 'num';
+          }
+
           tr.appendChild(td);
         });
 
@@ -354,6 +630,7 @@
       });
 
       $('rows').appendChild(fragment);
+
       $('results').style.display = 'block';
 
       setStatus(
@@ -365,7 +642,13 @@
 
     } catch (error) {
       console.error(error);
-      setStatus('status', error.message || 'Une erreur est survenue.', true);
+
+      setStatus(
+        'status',
+        error.message || 'Une erreur est survenue.',
+        true
+      );
+
     } finally {
       button.disabled = false;
     }
@@ -381,13 +664,17 @@
       limit: PAGE_SIZE
     };
 
-    if (cursor) payload.cursor = cursor;
+    if (cursor) {
+      payload.cursor = cursor;
+    }
 
     const json = await postToWorker(payload);
-    const data = json && json.result && json.result.data;
+    const data = extractApiData(json);
 
     if (!data || !Array.isArray(data.items)) {
-      throw new Error('Réponse inattendue : classement des UM introuvable.');
+      throw new Error(
+        'Réponse inattendue : classement des UM introuvable.'
+      );
     }
 
     return data;
@@ -395,10 +682,12 @@
 
   async function getMuDetails(muId) {
     const json = await postToWorker({ muId });
-    const data = json && json.result && json.result.data;
+    const data = extractApiData(json);
 
     if (!data || !data._id) {
-      throw new Error(`Impossible de récupérer la fiche de l'UM ${muId}.`);
+      throw new Error(
+        `Impossible de récupérer la fiche de l'UM ${muId}.`
+      );
     }
 
     return data;
@@ -406,16 +695,19 @@
 
   async function runMilitaryUnits() {
     const button = $('runMu');
+
     button.disabled = true;
 
     $('muResults').style.display = 'none';
     $('muStats').hidden = true;
     $('muRows').replaceChildren();
+
     latestMuRows = [];
 
     let cursor = null;
     let pages = 0;
     let worldCount = null;
+
     const frenchUnits = [];
     const checkedUnits = new Set();
     const usedCursors = new Set();
@@ -423,30 +715,47 @@
     try {
       do {
         const data = await getMuRankingPage(cursor);
+
         pages += 1;
 
-        if (data.ranking && Number.isFinite(data.ranking.count)) {
+        if (
+          data.ranking &&
+          Number.isFinite(data.ranking.count)
+        ) {
           worldCount = data.ranking.count;
         }
 
-        // Les unités sont examinées dans l'ordre de leur classement mondial.
-        const candidates = data.items.filter(item =>
-          item.mu && !checkedUnits.has(item.mu)
+        const candidates = data.items.filter(
+          item =>
+            item.mu &&
+            !checkedUnits.has(item.mu)
         );
 
-        for (let i = 0; i < candidates.length; i += MU_BATCH_SIZE) {
-          const batch = candidates.slice(i, i + MU_BATCH_SIZE);
+        for (
+          let i = 0;
+          i < candidates.length;
+          i += MU_BATCH_SIZE
+        ) {
+          const batch = candidates.slice(
+            i,
+            i + MU_BATCH_SIZE
+          );
 
-          batch.forEach(item => checkedUnits.add(item.mu));
+          batch.forEach(
+            item => checkedUnits.add(item.mu)
+          );
 
           setStatus(
             'muStatus',
-            `Recherche en cours… ${pages} page(s) parcourue(s), ${checkedUnits.size} UM examinées, ${frenchUnits.length} UM française(s) trouvée(s).`
+            `Recherche en cours… ${pages} page(s) parcourue(s), ` +
+            `${checkedUnits.size} UM examinées, ` +
+            `${frenchUnits.length} UM française(s) trouvée(s).`
           );
 
-          // Récupération des fiches par groupes de 10.
           const details = await Promise.all(
-            batch.map(item => getMuDetails(item.mu))
+            batch.map(
+              item => getMuDetails(item.mu)
+            )
           );
 
           for (let j = 0; j < batch.length; j++) {
@@ -463,13 +772,18 @@
             }
           }
 
-          frenchUnits.sort((a, b) =>
-            (a.rank ?? Infinity) - (b.rank ?? Infinity)
+          frenchUnits.sort(
+            (a, b) =>
+              (a.rank ?? Infinity) - (b.rank ?? Infinity)
           );
 
-          if (frenchUnits.length >= MU_TARGET) break;
+          if (frenchUnits.length >= MU_TARGET) {
+            break;
+          }
 
-          await new Promise(resolve => setTimeout(resolve, 120));
+          await new Promise(
+            resolve => setTimeout(resolve, 120)
+          );
         }
 
         if (frenchUnits.length >= MU_TARGET) {
@@ -485,13 +799,17 @@
         }
 
         if (usedCursors.has(next)) {
-          throw new Error('Le curseur du classement des UM a déjà été utilisé.');
+          throw new Error(
+            'Le curseur du classement des UM a déjà été utilisé.'
+          );
         }
 
         usedCursors.add(next);
         cursor = next;
 
-        await new Promise(resolve => setTimeout(resolve, 120));
+        await new Promise(
+          resolve => setTimeout(resolve, 120)
+        );
 
       } while (cursor);
 
@@ -499,48 +817,66 @@
 
       $('muFound').textContent = latestMuRows.length;
       $('muPages').textContent = pages;
-      $('muTotal').textContent = worldCount === null ? '—' : formatNumber(worldCount);
+
+      $('muTotal').textContent =
+        worldCount === null
+          ? '—'
+          : formatNumber(worldCount);
+
       $('muStats').hidden = false;
 
       if (latestMuRows.length === 0) {
-        setStatus('muStatus', 'Aucune UM française trouvée.', true);
+        setStatus(
+          'muStatus',
+          'Aucune UM française trouvée.',
+          true
+        );
         return;
       }
 
       const fragment = document.createDocumentFragment();
 
       latestMuRows.forEach((item, index) => {
-  const tr = document.createElement('tr');
-  const muUrl = `https://app.warera.io/mu/${item.mu}`;
+        const tr = document.createElement('tr');
 
-  const values = [
-    index + 1,
-    muUrl,
-    formatMillions(item.value ?? 0)
-  ];
+        const muUrl =
+          `https://app.warera.io/mu/${item.mu}`;
 
-  values.forEach((value, i) => {
-    const td = document.createElement('td');
+        const values = [
+          index + 1,
+          muUrl,
+          formatMillions(item.value ?? 0)
+        ];
 
-    if (i === 1) {
-      const link = document.createElement('a');
-      link.href = value;
-      link.textContent = value;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      td.appendChild(link);
-    } else {
-      td.textContent = value;
-    }
+        values.forEach((value, i) => {
+          const td = document.createElement('td');
 
-    if (i === 2) td.className = 'num';
-    tr.appendChild(td);
-  });
+          if (i === 1) {
+            const link = document.createElement('a');
 
-  fragment.appendChild(tr);
-});
+            link.href = value;
+            link.textContent = value;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+
+            td.appendChild(link);
+
+          } else {
+            td.textContent = value;
+          }
+
+          if (i === 2) {
+            td.className = 'num';
+          }
+
+          tr.appendChild(td);
+        });
+
+        fragment.appendChild(tr);
+      });
 
       $('muRows').appendChild(fragment);
+
       $('muResults').style.display = 'block';
 
       setStatus(
@@ -552,7 +888,233 @@
 
     } catch (error) {
       console.error(error);
-      setStatus('muStatus', error.message || 'Une erreur est survenue.', true);
+
+      setStatus(
+        'muStatus',
+        error.message || 'Une erreur est survenue.',
+        true
+      );
+
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  // ==========================
+  // TOP 10 DONATEURS FRANÇAIS
+  // ==========================
+
+  async function getDonationPage(cursor) {
+    const payload = {
+      action: 'donationTransactions',
+      limit: PAGE_SIZE
+    };
+
+    if (cursor) {
+      payload.cursor = cursor;
+    }
+
+    const json = await postToWorker(payload);
+    const data = extractApiData(json);
+
+    if (!data || !Array.isArray(data.items)) {
+      throw new Error(
+        'Réponse inattendue : liste des transactions introuvable.'
+      );
+    }
+
+    return data;
+  }
+
+  async function runDonations() {
+    const button = $('runDonations');
+
+    button.disabled = true;
+
+    $('donationResults').style.display = 'none';
+    $('donationStats').hidden = true;
+    $('donationRows').replaceChildren();
+
+    latestDonationRows = [];
+
+    let cursor = null;
+    let pages = 0;
+
+    let donationCount = 0;
+    let donationTotal = 0;
+
+    const donors = new Map();
+    const usedCursors = new Set();
+
+    try {
+      do {
+        if (pages >= MAX_DONATION_PAGES) {
+          throw new Error(
+            `Limite de sécurité atteinte : ${MAX_DONATION_PAGES} pages. ` +
+            'Le classement ne peut pas être considéré comme complet.'
+          );
+        }
+
+        const data = await getDonationPage(cursor);
+
+        pages += 1;
+
+        for (const item of data.items) {
+          if (
+            item.transactionType !== 'donation' ||
+            item.sellerCountryId !== FRANCE_ID ||
+            !item.buyerId ||
+            item.createdAt === undefined ||
+            item.money === undefined
+          ) {
+            continue;
+          }
+
+          const createdAt = new Date(item.createdAt);
+          const timestamp = createdAt.getTime();
+
+          if (!Number.isFinite(timestamp)) {
+            continue;
+          }
+
+          // Début de semaine inclusif,
+          // début de semaine suivante exclusif.
+          if (
+            timestamp < donationWeek.start.getTime() ||
+            timestamp >= donationWeek.end.getTime()
+          ) {
+            continue;
+          }
+
+          const amount = Number(item.money);
+
+          if (!Number.isFinite(amount) || amount <= 0) {
+            continue;
+          }
+
+          donationCount += 1;
+          donationTotal += amount;
+
+          const buyerId = String(item.buyerId);
+
+          donors.set(
+            buyerId,
+            (donors.get(buyerId) || 0) + amount
+          );
+        }
+
+        setStatus(
+          'donationStatus',
+          `Récupération en cours… ${pages} page(s) parcourue(s), ` +
+          `${donationCount} don(s) français comptabilisé(s), ` +
+          `${donors.size} donateur(s) identifié(s).`
+        );
+
+        const next = data.nextCursor || null;
+
+        if (!next) {
+          cursor = null;
+          break;
+        }
+
+        if (usedCursors.has(next)) {
+          throw new Error(
+            'Le curseur des transactions a déjà été utilisé. ' +
+            'Le classement est incomplet.'
+          );
+        }
+
+        usedCursors.add(next);
+        cursor = next;
+
+        await new Promise(
+          resolve => setTimeout(resolve, 120)
+        );
+
+      } while (cursor);
+
+      // Le parcours est terminé : on peut calculer le classement.
+      latestDonationRows = Array.from(
+        donors.entries()
+      )
+        .map(([buyerId, amount]) => ({
+          buyerId,
+          amount
+        }))
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 10);
+
+      $('donationPages').textContent = pages;
+      $('donationCount').textContent =
+        formatNumber(donationCount);
+
+      $('donationDonors').textContent =
+        formatNumber(donors.size);
+
+      $('donationTotal').textContent =
+        formatNumber(donationTotal);
+
+      $('donationStats').hidden = false;
+
+      if (latestDonationRows.length === 0) {
+        setStatus(
+          'donationStatus',
+          'Aucun don français trouvé sur cette période.',
+          true
+        );
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      latestDonationRows.forEach((item, index) => {
+        const tr = document.createElement('tr');
+
+        const values = [
+          index + 1,
+          `@${item.buyerId}`,
+          formatNumber(item.amount)
+        ];
+
+        values.forEach((value, i) => {
+          const td = document.createElement('td');
+
+          td.textContent = value;
+
+          if (i === 2) {
+            td.className = 'num';
+          }
+
+          tr.appendChild(td);
+        });
+
+        fragment.appendChild(tr);
+      });
+
+      $('donationRows').appendChild(fragment);
+
+      $('donationResults').style.display = 'block';
+
+      setStatus(
+        'donationStatus',
+        `Terminé : ${latestDonationRows.length} donateur(s) dans le Top 10. ` +
+        `${pages} page(s) de transactions entièrement parcourue(s).`
+      );
+
+    } catch (error) {
+      console.error(error);
+
+      latestDonationRows = [];
+
+      $('donationResults').style.display = 'none';
+      $('donationStats').hidden = true;
+
+      setStatus(
+        'donationStatus',
+        error.message || 'Une erreur est survenue.',
+        true
+      );
+
     } finally {
       button.disabled = false;
     }
@@ -563,40 +1125,115 @@
   // ==========================
 
   $('copy').addEventListener('click', async () => {
-    if (!latestRows.length) return;
+    if (!latestRows.length) {
+      return;
+    }
 
-    const textToCopy = latestRows.map((item, index) =>
-      `${index + 1} - @${item.user} - ${formatMillions(item.value ?? 0)}`
+    const textToCopy = latestRows.map(
+      (item, index) =>
+        `${index + 1} - @${item.user} - ` +
+        `${formatMillions(item.value ?? 0)}`
     ).join('\n');
 
     try {
       await navigator.clipboard.writeText(textToCopy);
-      setStatus('status', 'Résultats copiés dans le presse-papiers.');
+
+      setStatus(
+        'status',
+        'Résultats copiés dans le presse-papiers.'
+      );
+
     } catch {
-      setStatus('status', 'Impossible de copier automatiquement.', true);
+      setStatus(
+        'status',
+        'Impossible de copier automatiquement.',
+        true
+      );
     }
   });
 
   $('muCopy').addEventListener('click', async () => {
-    if (!latestMuRows.length) return;
+    if (!latestMuRows.length) {
+      return;
+    }
 
-    const textToCopy = latestMuRows.map((item, index) => {
-  const muUrl = `https://app.warera.io/mu/${item.mu}`;
-  return `${index + 1} - [${muUrl}](${muUrl}) - ${formatMillions(item.value ?? 0)}`;
-}).join('\n');
+    const textToCopy = latestMuRows.map(item => {
+      const index = latestMuRows.indexOf(item);
+      const muUrl =
+        `https://app.warera.io/mu/${item.mu}`;
+
+      return (
+        `${index + 1} - [${muUrl}](${muUrl}) - ` +
+        `${formatMillions(item.value ?? 0)}`
+      );
+    }).join('\n');
 
     try {
       await navigator.clipboard.writeText(textToCopy);
-      setStatus('muStatus', 'Résultats copiés dans le presse-papiers.');
+
+      setStatus(
+        'muStatus',
+        'Résultats copiés dans le presse-papiers.'
+      );
+
     } catch {
-      setStatus('muStatus', 'Impossible de copier automatiquement.', true);
+      setStatus(
+        'muStatus',
+        'Impossible de copier automatiquement.',
+        true
+      );
     }
   });
 
-  $('run').addEventListener('click', runPlayers);
-  $('runMu').addEventListener('click', runMilitaryUnits);
+  $('donationCopy').addEventListener('click', async () => {
+    if (!latestDonationRows.length) {
+      return;
+    }
+
+    const textToCopy = latestDonationRows.map(
+      (item, index) =>
+        `${index + 1} - @${item.buyerId} - ` +
+        `${formatNumber(item.amount)}`
+    ).join('\n');
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+
+      setStatus(
+        'donationStatus',
+        'Top 10 des donateurs copié dans le presse-papiers.'
+      );
+
+    } catch {
+      setStatus(
+        'donationStatus',
+        'Impossible de copier automatiquement.',
+        true
+      );
+    }
+  });
+
+  // ==========================
+  // ÉVÉNEMENTS
+  // ==========================
+
+  $('run').addEventListener(
+    'click',
+    runPlayers
+  );
+
+  $('runMu').addEventListener(
+    'click',
+    runMilitaryUnits
+  );
+
+  $('runDonations').addEventListener(
+    'click',
+    runDonations
+  );
 
 })();
 </script>
+
 </body>
 </html>
